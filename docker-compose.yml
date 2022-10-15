@@ -1,8 +1,0 @@
-version: '3.4'
-
-services:
-  fahrtenbuch_backend:
-    image: ${DOCKER_REGISTRY-}fahrtenbuchbackend
-    build:
-      context: .
-      dockerfile: Fahrtenbuch_Backend/Dockerfile
