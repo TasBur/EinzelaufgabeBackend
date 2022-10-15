@@ -1,0 +1,36 @@
+name: .NET build and test and upload docker Image to Docker Registry
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+ 
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    - name: Azure Container Registry Login
+      uses: Azure/docker-login@v1
+      with:
+        username: ${{ secrets.REGISTRY_USERNAME }} 
+        password: ${{ secrets.REGISTRY_PASSWORD }} 
+        login-server: ${{ secrets.REGISTRY }} 
+    - name: Docker Build
+      run: docker build -f Fahrtenbuch_Backend/Dockerfile -t burtas-backend .
+    - name: Docker Tag
+      run: docker tag burtas-backend:latest idi2020.azurecr.io/burtas-backend:latest
+    - name: Docker Push
+      run: docker push idi2020.azurecr.io/burtas-backend:latest
