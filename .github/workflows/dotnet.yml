@@ -32,7 +32,7 @@ jobs:
       run: dotnet build --no-restore
     - name: Create Release Build of WebApp
       run: dotnet publish -o ../Containerbuild/release
-      working-directory: ./EinzelaufgabeBackend
+      working-directory: ../EinzelaufgabeBackend
       env:
         MariaDbConnectionString: "server=localhost;port=3306;user=root;password=mariadbpw;database=logbookDB_local"
     - name: Test
