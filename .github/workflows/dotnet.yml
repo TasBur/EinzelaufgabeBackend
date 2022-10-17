@@ -16,12 +16,27 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
+    - run: sudo service mysql stop
+    - name: Build DB Container
+      uses: getong/mariadb-action@v1.1
+      with:
+        host port: 3306
+        container port: 3306
+        character set server: 'utf8' 
+        collation server: 'utf8_general_ci' 
+        mysql database: 'logbookDB_local'
+        mysql root password: mariadbpw
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+    - name: Create Release Build of WebApp
+      run: dotnet publish -o ../Containerbuild/release
+      working-directory: ./Backend
+      env:
+        MariaDbConnectionString: "server=localhost;port=3306;user=root;password=mariadbpw;database=logbookDB_local"
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test 
     - name: Azure Container Registry Login
       uses: Azure/docker-login@v1
       with:
